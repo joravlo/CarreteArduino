@@ -41,15 +41,15 @@ const long interval = 1000;
 unsigned long previousMillis = 0; 
 
 //Pines
-const int pinButtonUp = D6;
-const int pinButtonDown = D7;
-const int pinButtonOk = D8;
-const int pinCountCable = D5;
+const int pinModo = D5;
 const int pinMotorLeft = D3;
 const int pinMotorRight = D4;
-const int pinMotorPWM = D2;
-const int pinModo = D0;
-const int pinDirManual = D9;
+const int pinCountCable = D0;
+const int pinButtonUp = D7;
+const int pinButtonDown = D8;
+const int pinDirManual = D6;
+
+
 
 WiFiUDP Udp;
 
@@ -66,13 +66,13 @@ void stopMotor();
 void setup() {
   Serial.begin(4800);
 
+  pinMode(pinModo, INPUT);
+  pinMode(pinMotorLeft, OUTPUT);
+  pinMode(pinMotorRight, OUTPUT);  
   pinMode(pinButtonUp, INPUT);
   pinMode(pinButtonDown, INPUT);
-  pinMode(pinButtonOk, INPUT);
-  pinMode(pinMotorLeft, OUTPUT);
-  pinMode(pinMotorRight, OUTPUT);
-  pinMode(pinModo, INPUT);
   pinMode(pinDirManual, INPUT);
+  //pinMode(pinButtonOk, INPUT);
   
   Wire.begin(4, 5);
   lcd.init();
@@ -96,7 +96,7 @@ void setup() {
 void loop() {
   int stateButtonUp = digitalRead(pinButtonUp);
   int stateButtonDown = digitalRead(pinButtonDown);
-  int stateButtonOk = digitalRead(pinButtonOk);
+  //int stateButtonOk = digitalRead(pinButtonOk);
   int stateCountCable = digitalRead(pinCountCable);
 
   // if there's data available, read a packet
@@ -140,22 +140,23 @@ void loop() {
     delay(500);
   }
 
-  if(stateButtonOk == 1){
+  /*if(stateButtonOk == 1){
       countOk = countDepth;
       delay(500);
-    }
+    }*/
 
- if (stateCountCable == LOW) {
-    if (!isManual && pinDirManuel == HIGH) {
+  if (stateCountCable == LOW) {
+    if (!isManual && pinDirManual == HIGH) {
         countCable = countCable + 0.25;
         String count = String(countDepth);
         String lastDepthString = String(lastDepth);
         printTable(lastDepthString, count, countCable);
-     } else if (!isManual && pinDirManuel == LOW) {
-      countCable = countCable - 0.25;
+     }  else if (!isManual && pinDirManual == LOW) {
+        countCable = countCable - 0.25;
         String count = String(countDepth);
         String lastDepthString = String(lastDepth);
-        printTable(lastDepthString, count, countCable);  
+        printTable(lastDepthString, count, countCable); 
+    
       }
 
      while(stateCountCable == LOW){                 //antirebote
